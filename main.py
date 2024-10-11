@@ -3,7 +3,7 @@ import time
 from part1_read_preprocessing import preprocess_json_gz
 from part1_input_es_through_spark import input_es_through_spark
 from part2_spark_elastic import spark_elastic
-from part2_spark_kafka import kafka_stream
+from part2_kafka_spark import kafka_stream
 
 def part1():
 
@@ -37,6 +37,6 @@ def part2():
 if __name__ == "__main__":
     # part 1
     part1()
-    
+
     # part 2
     part2()
