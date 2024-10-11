@@ -103,10 +103,12 @@ def process_batch(df, epoch_id):
         .mode("append") \
         .save("products")  # 'products'는 Elasticsearch 인덱스 이름입니다.
 
-# 스트리밍 쿼리 실행 (기존 코드 대체)
-query = json_stream.writeStream \
-    .foreachBatch(process_batch) \
-    .outputMode("append") \
-    .start()
 
-query.awaitTermination()
+def spark_elastic():
+    # 스트리밍 쿼리 실행 (기존 코드 대체)
+    query = json_stream.writeStream \
+        .foreachBatch(process_batch) \
+        .outputMode("append") \
+        .start()
+
+    query.awaitTermination()
