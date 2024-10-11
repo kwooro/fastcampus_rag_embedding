@@ -1,19 +1,19 @@
+import pyspark
 from pyspark.sql import SparkSession
 from pyspark.sql.functions import col, struct, to_json
 from elasticsearch import Elasticsearch
 from pyspark.sql.types import StructType, StructField, StringType, ArrayType, MapType
 
 def input_es_through_spark(list_data):
-    # Spark 세션 생성
+    #Spark 세션 생성
     spark = SparkSession.builder \
     .appName("ElasticsearchInput") \
     .config("spark.jars.packages", "org.elasticsearch:elasticsearch-spark-30_2.12:8.9.0") \
     .getOrCreate()
 
-    # spark = SparkSession.builder \
-    #     .appName("ElasticsearchInput") \
-    #     .config("spark.jars.packages", "org.elasticsearch:elasticsearch-spark-30_2.12:7.15.2") \
-    #     .getOrCreate()
+
+    # conf = pyspark.SparkConf()
+    # spark = SparkSession.builder.appName("indexer").config(conf=conf).getOrCreate()
 
     # 스키마 정의
     schema = StructType([

@@ -1,7 +1,7 @@
 import os
 import time
-from read_preprocessing import preprocess_json_gz
-from input_es_through_spark import input_es_through_spark
+from part1_read_preprocessing import preprocess_json_gz
+from part1_input_es_through_spark import input_es_through_spark
 
 if __name__ == "__main__":
     start_time = time.time()
