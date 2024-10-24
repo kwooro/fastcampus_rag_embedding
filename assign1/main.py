@@ -22,7 +22,12 @@ def part1():
     print(f"전처리 소요 시간: {end_time - start_time} 초")
     
     # 2. spark를 통해 elasticsearch에 저장
-    input_es_through_spark(list_data)
+    N = 20
+    chunk_size = len(list_data) // N
+    for i in range(N):
+        start_idx = i * chunk_size
+        end_idx = start_idx + chunk_size
+        input_es_through_spark(list_data[start_idx:end_idx])
     end_time = time.time()
     print(f"엘라스틱 서치 입력 소요 시간: {end_time - start_time} 초")
 
