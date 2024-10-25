@@ -19,6 +19,7 @@ def input_es_through_spark(list_data):
     schema = StructType([
         StructField("item_id", StringType(), True),
         StructField("item_keywords", ArrayType(StringType()), True),
+        StructField("bullet_point", ArrayType(StringType()), True),
         StructField("product_description", ArrayType(StringType()), True),
         StructField("brand", ArrayType(StringType()), True),
         StructField("color", ArrayType(StringType()), True),

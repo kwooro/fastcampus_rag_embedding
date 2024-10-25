@@ -32,6 +32,7 @@ def process_entry(entry):
         'item_id': entry.get('item_id'),
         'item_keywords': filter_and_preprocess_language_tag(entry.get('item_keywords', [])),
         'product_description': filter_and_preprocess_language_tag(entry.get('product_description', [])),
+        'bullet_point': filter_and_preprocess_language_tag(entry.get('bullet_point', [])),
         'brand': filter_and_preprocess_language_tag(entry.get('brand', [])),
         'color': filter_and_preprocess_language_tag(entry.get('color', [])),
         'fabric_type': filter_and_preprocess_language_tag(entry.get('fabric_type', [])),
