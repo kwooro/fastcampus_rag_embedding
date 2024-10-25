@@ -9,14 +9,13 @@ class KafkaSparkIntegration:
             bootstrap_servers='localhost:9092',
             value_serializer=lambda v: json.dumps(v).encode('utf-8')
         )
+        print('kafka producer 초기화', self.producer)
 
     def on_success(self, metadata):
         print(f"Message produced with the offset: {metadata.offset}")
 
     def on_error(self, error):
         print(f"An error occurred while publishing the message. {error}")
-
-
 
     def kafka_stream(self, item_id, item_keywords, product_description):
         # message = {

@@ -58,16 +58,26 @@ class SparkElasticsearchIntegration:
             .select("data.*")
 
         self.es_conf = {
-            "es.nodes.discovery": "false",
-            "es.nodes.data.only": "false",
-            "es.net.http.auth.user": "elastic",
-            "es.net.http.auth.pass": "password",
             "es.nodes": "localhost",
             "es.port": "9200",
-            "es.write.operation": "update",
+            "es.resource": "products",  
             "es.mapping.id": "item_id",
-            "es.mapping.exclude": "item_id",
+            "es.net.http.auth.user": "elastic",
+            "es.net.http.auth.pass": "password",
+            "es.nodes.wan.only": "true"
         }
+
+        # self.es_conf = {
+        #     "es.nodes.discovery": "false",
+        #     "es.nodes.data.only": "false",
+        #     "es.net.http.auth.user": "elastic",
+        #     "es.net.http.auth.pass": "password",
+        #     "es.nodes": "localhost",
+        #     "es.port": "9200",
+        #     "es.write.operation": "update",
+        #     "es.mapping.id": "item_id",
+        #     "es.mapping.exclude": "item_id",
+        # }
 
     def preprocess_text(self, text):
         lemmatizer = WordNetLemmatizer()
@@ -114,7 +124,7 @@ class SparkElasticsearchIntegration:
 
         print("Elasticsearch로 전송될 데이터:")
         update_df.show(truncate=False)
-        
+
         # Elasticsearch 업데이트
         update_df.write \
             .format("org.elasticsearch.spark.sql") \
