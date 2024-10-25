@@ -61,10 +61,12 @@ async def keyword_search(q: str = Query(..., description="키워드 검색어"))
 @app.get("/vector")
 async def vector_search(q: str = Query(..., description="벡터 검색어")):
     vector_results = milvus_client.search_collection(collection_name='abo_listings', query=q)    
+    #print('vector search results:', vector_results)
 
     item_ids = ' '.join([result['item_id'] for result in vector_results])
     results = es_search.get_item_name_by_ids(item_ids)
     dict_results = extract_from_elastic_results_dict_format(results)
+    #print('dict results:', dict_results)
 
     combined_results = []
     for item in vector_results:    
