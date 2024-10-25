@@ -15,6 +15,8 @@ from nltk.tokenize import word_tokenize
 from nltk.stem import PorterStemmer
 from nltk.stem import WordNetLemmatizer
 
+import time
+
 #https://repo1.maven.org/maven2/org/apache/spark/spark-sql-kafka-0-10_2.12/3.4.3/spark-sql-kafka-0-10_2.12-3.4.3.jar
 #https://mvnrepository.com/artifact/org.apache.spark/spark-sql-kafka-0-10_2.12/3.4.3
 
@@ -119,24 +121,33 @@ class SparkElasticsearchIntegration:
         
         update_df = df.select(
             col("item_id"),
-            to_json(struct(col("item_keywords").alias("keywords"))).alias("doc")
+            to_json(struct(col("item_keywords").alias("keywords"),
+                           col("product_description").alias("description") 
+                           )).alias("doc")
         )
 
         print("Elasticsearch로 전송될 데이터:")
         update_df.show(truncate=False)
 
+        print('엘라스틱 서치 업데이트 시작')
         # Elasticsearch 업데이트
         update_df.write \
             .format("org.elasticsearch.spark.sql") \
             .options(**self.es_conf) \
             .mode("append") \
-            .save("products")  # 'products'는 Elasticsearch 인덱스 이름입니다.
+            .save()
+        print('엘라스틱 서치 업데이트 완료')
 
     def spark_elastic(self):
         # 스트리밍 쿼리 실행 (기존 코드 대체)
         query = self.json_stream.writeStream \
             .foreachBatch(self.process_batch) \
-            .outputMode("append") \
+            .outputMode("update") \
             .start()
+        
+        while query.isActive:
+            print(query.status)
+            time.sleep(10)  
+        #print('스트리밍 쿼리 성공')
 
         query.awaitTermination()
