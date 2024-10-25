@@ -113,6 +113,7 @@ class Milvus:
         #output_fields=["id", "embedding"]  
         extracted_results = extract_from_results(results)
         #print('vector search results:', results)
+        print('vector search results:', extracted_results)
 
         return extracted_results
 
