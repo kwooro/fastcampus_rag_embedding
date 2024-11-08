@@ -3,6 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from input_embeddings_vectordb import Milvus
 from elasticsearch_search import ElasticsearchSearch
 import json
+from sklearn.feature_extraction.text import TfidfVectorizer
 
 app = FastAPI()
 milvus_client = Milvus()
@@ -33,6 +34,31 @@ def extract_from_elastic_results_dict_format(results):
             }
     return json_results
 
+
+async def rerank_with_tfidf(query, results):
+    # 모든 결과의 텍스트를 수집합니다.
+    documents = [' '.join(result['bullet_point']) for result in results]
+    
+    # TF-IDF 벡터라이저를 초기화합니다.
+    vectorizer = TfidfVectorizer()
+    
+    # 결과와 쿼리를 벡터화합니다.
+    tfidf_matrix = vectorizer.fit_transform(documents + [query])
+    
+    # 쿼리 벡터를 추출합니다.
+    query_vector = tfidf_matrix[-1]
+    
+    # 각 결과와 쿼리 간의 코사인 유사도를 계산합니다.
+    from sklearn.metrics.pairwise import cosine_similarity
+    similarities = cosine_similarity(tfidf_matrix[:-1], query_vector)
+    
+    # 유사도에 따라 결과를 정렬합니다.
+    sorted_indices = similarities.flatten().argsort()[::-1]
+    sorted_results = [results[i] for i in sorted_indices]
+    
+    return sorted_results[:10]
+
+
 # CORS 설정
 app.add_middleware(
     CORSMiddleware,
@@ -42,6 +68,8 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+
+
 # Public API
 @app.get("/search")
 async def search(q: str = Query(..., description="검색어")):
@@ -49,7 +77,12 @@ async def search(q: str = Query(..., description="검색어")):
     vector_results = await vector_search(q)
 
     combined_results = vector_results['result'] + keyword_results['result']
-    return {"type": "search", "query": q, "result": combined_results}
+    #print('combined_results:', combined_results)
+
+    # query와 결과에서 키워드 검색 결과를 더 높게 매칭
+    sorted_results = await rerank_with_tfidf(q, combined_results)
+    #print('sorted_results:', sorted_results)
+    return {"type": "search", "query": q, "result": sorted_results}
 
 # Internal API
 @app.get("/keyword")

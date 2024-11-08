@@ -109,11 +109,11 @@ class Milvus:
         results = self.client.search(collection_name =collection_name, 
                                 data=query_embedding,
                                 search_params=search_params,
-                                limit=10 )
+                                limit=20 )
         #output_fields=["id", "embedding"]  
         extracted_results = extract_from_results(results)
         #print('vector search results:', results)
-        print('vector search results:', extracted_results)
+        #print('vector search results:', extracted_results)
 
         return extracted_results
 
